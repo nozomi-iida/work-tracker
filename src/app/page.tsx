@@ -13,15 +13,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { PdfDocument } from "@/components/pdfDocument";
+import { TimeTracker } from "@/types";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const WORK_TIME = "WORK_TIME";
-
-type TimeTracker = {
-  id: string;
-  started_at: string;
-  ended_at?: string;
-  description?: string;
-};
 
 export default function Home() {
   const [data, setData] = useState<TimeTracker[]>([]);
@@ -90,12 +86,38 @@ export default function Home() {
             <form onSubmit={onCheckOut}>
               <Textarea ref={textareaRef} className="mb-8" />
               <DialogClose asChild>
-                <Button variant="outline">Check Out</Button>
+                <Button variant="outline" type="submit">
+                  Check Out
+                </Button>
               </DialogClose>
             </form>
           </DialogContent>
         </Dialog>
-        <Button>Download</Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Download</Button>
+          </DialogTrigger>
+          <DialogContent className="min-w-[90%]">
+            <DialogHeader>
+              <DialogTitle>Download PDF</DialogTitle>
+            </DialogHeader>
+            <div className="flex justify-between gap-4 items-end ">
+              <div className="flex-auto min-h-[80vh] h-full bg-gray-300 p-4">
+                <div className="bg-white h-full">
+                  <PdfDocument data={data} />
+                </div>
+              </div>
+              <DialogClose asChild>
+                <PDFDownloadLink
+                  fileName="test.pdf"
+                  document={<PdfDocument data={data} />}
+                >
+                  <Button variant="outline">Download</Button>
+                </PDFDownloadLink>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       {data.map((item) => (
         <div key={item.started_at} className="flex gap-8">
